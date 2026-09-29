@@ -1,18 +1,21 @@
 "use client";
 
-import { EXEC_POSITIONS, EXEC_NAMES_ALPHA } from "@/lib/module3-data";
+import { EXEC_POSITIONS, EXEC_NAMES_ALPHA, PHONE_CALLS } from "@/lib/module3-data";
 import { CASE_DESCRIPTION, PREVIEW_NOTE } from "@/lib/content";
-import { Stage1State } from "./state";
+import { Stage1Section, Stage1State } from "./state";
+import EvidencePicker from "./EvidencePicker";
 
 export default function Stage1({
   s,
   onChange,
   feedback,
+  badSections,
   onNext,
 }: {
   s: Stage1State;
   onChange: (patch: Partial<Stage1State>) => void;
   feedback: string;
+  badSections: Set<Stage1Section>;
   onNext: () => void;
 }) {
   return (
@@ -25,7 +28,7 @@ export default function Stage1({
         </div>
       </div>
 
-      <div className="lang-section">
+      <div className={"lang-section" + (badSections.has("company") ? " invalid" : "")}>
         <div className="lang-head"><h3>Company Info - Company Background &amp; Executive Reporter</h3></div>
         <div className="lang-body">
           <div className="field">
@@ -38,7 +41,7 @@ export default function Stage1({
               <option value="">Choose one…</option>
               <option>Palm Sugar</option>
               <option>Semiconductors</option>
-              <option>Stuffed Animal</option>
+              <option>Stuffed Animals</option>
               <option>Make-up</option>
               <option>Liquefied Natural Gas</option>
             </select>
@@ -73,7 +76,7 @@ export default function Stage1({
         </div>
       </div>
 
-      <div className="lang-section">
+      <div className={"lang-section" + (badSections.has("shipments") ? " invalid" : "")}>
         <div className="lang-head"><h3>Current Shipments - Invoice &amp; Shipping Data Reporter</h3></div>
         <div className="lang-body">
           <div className="form-grid">
@@ -85,7 +88,7 @@ export default function Stage1({
         </div>
       </div>
 
-      <div className="lang-section">
+      <div className={"lang-section" + (badSections.has("database") ? " invalid" : "")}>
         <div className="lang-head"><h3>Database Parameters - Email &amp; Internal Communication Reporter</h3></div>
         <div className="lang-body">
           <div className="form-grid">
@@ -93,15 +96,12 @@ export default function Stage1({
             <div className="field"><label>What is the size, in Megabytes, of the entire database?</label><input type="text" value={s.dbsize} onChange={(e) => onChange({ dbsize: e.target.value })} /></div>
             <div className="field">
               <label>What is the topic of the longest phone call?</label>
-              <select className="field-select" value={s.longestcall} onChange={(e) => onChange({ longestcall: e.target.value })}>
-                <option value="">Choose one…</option>
-                <option>Animal Trafficking</option>
-                <option>The Weather</option>
-                <option>Company Stock Price Falling</option>
-                <option>Japanese Order Details</option>
-                <option>Directions to Padang Besar Border Crossing</option>
-                <option>Delayed Factory Production in Vietnam</option>
-              </select>
+              <EvidencePicker
+                value={s.longestcall}
+                onChange={(v) => onChange({ longestcall: v })}
+                items={PHONE_CALLS}
+                placeholder="Search phone call log…"
+              />
             </div>
             <div className="field">
               <label>Which company executive sent the most emails to company employees?</label>

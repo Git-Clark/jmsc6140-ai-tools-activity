@@ -9,7 +9,7 @@ import Stage2 from "./Stage2";
 import Stage3 from "./Stage3";
 import OnboardingModal from "./OnboardingModal";
 import DebriefModal from "./DebriefModal";
-import { P3State, checkCase, checkStage1, checkStage2, defaultP3State, isP3State } from "./state";
+import { P3State, Stage1Section, checkCase, checkStage1, checkStage2, defaultP3State, isP3State } from "./state";
 
 export interface Module3Handle {
   /** Ports goToActivity3(): shows the tab and, on a first visit, opens the
@@ -22,7 +22,7 @@ const Module3 = forwardRef<Module3Handle, { onStatusChange: (done: boolean) => v
   ref
 ) {
   const [p3, setP3] = usePersistentState<P3State>("jmsc6140_activity3_v3", defaultP3State, isP3State);
-  const [s1Feedback, setS1Feedback] = useState("");
+  const [s1Attempted, setS1Attempted] = useState(false);
   const [s2Feedback, setS2Feedback] = useState("");
   const [transitionOpen, setTransitionOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
@@ -45,13 +45,14 @@ const Module3 = forwardRef<Module3Handle, { onStatusChange: (done: boolean) => v
     setP3((s) => ({ ...s, ...p }));
   }
 
+  const s1Result = checkStage1(p3.stage1);
+  const s1Feedback = s1Attempted && !s1Result.allOk ? "Check your: " + s1Result.missing.join(", ") + "." : "";
+  const s1BadSections: Set<Stage1Section> = s1Attempted ? s1Result.badSections : new Set();
+
   function submitStage1() {
-    const result = checkStage1(p3.stage1);
-    if (result.allOk) {
-      setS1Feedback("");
+    setS1Attempted(true);
+    if (s1Result.allOk) {
       setP3((s) => ({ ...s, stage1Done: true, currentStage: 2 }));
-    } else {
-      setS1Feedback("Check your: " + result.missing.join(", ") + ".");
     }
   }
 
@@ -115,6 +116,7 @@ const Module3 = forwardRef<Module3Handle, { onStatusChange: (done: boolean) => v
           s={p3.stage1}
           onChange={(pp) => patch({ stage1: { ...p3.stage1, ...pp } })}
           feedback={s1Feedback}
+          badSections={s1BadSections}
           onNext={submitStage1}
         />
       )}

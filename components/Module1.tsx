@@ -188,6 +188,7 @@ export default function Module1({
         <div>
           <p className="kicker">Activity 1</p>
           <h2>Subtitle Accuracy Checker</h2>
+          <p className="activity-warning">Please upload as a .txt file only! SRT and PDF files will not work.</p>
         </div>
         <div className="head-actions">
           <button className="btn" onClick={onInstructions}>Instructions</button>

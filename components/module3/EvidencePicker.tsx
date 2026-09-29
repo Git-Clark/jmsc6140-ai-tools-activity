@@ -1,19 +1,25 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { CASE_FILES } from "@/lib/module3-data";
+import { CASE_FILES, CaseFile } from "@/lib/module3-data";
 
 /**
  * Ports the prototype's createCiteField() exactly: a button showing the
- * picked file name, which opens a searchable list of CASE_FILES. Answers
- * cannot be typed in freely -- only picked from the case file manifest.
+ * picked file name, which opens a searchable list of files. Answers cannot
+ * be typed in freely -- only picked from the given file list, which
+ * defaults to the full case file manifest (CASE_FILES) but can be
+ * narrowed to a specific subset, such as the phone call log.
  */
 export default function EvidencePicker({
   value,
   onChange,
+  items = CASE_FILES,
+  placeholder = "Search case files…",
 }: {
   value: string;
   onChange: (v: string) => void;
+  items?: CaseFile[];
+  placeholder?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -35,7 +41,7 @@ export default function EvidencePicker({
   }
 
   const q = query.trim().toLowerCase();
-  const matches = CASE_FILES.filter((f) => !q || f.name.toLowerCase().indexOf(q) !== -1);
+  const matches = items.filter((f) => !q || f.name.toLowerCase().indexOf(q) !== -1);
 
   return (
     <div className="evidence-field-wrap" ref={wrapRef}>
@@ -47,7 +53,7 @@ export default function EvidencePicker({
           if (!open) openPanel(); else setOpen(false);
         }}
       >
-        <span className="ev-label">{value || "Search case files…"}</span>
+        <span className="ev-label">{value || placeholder}</span>
         <span
           className="ev-clear"
           title="Clear"

@@ -112,24 +112,38 @@ export interface StageCheckResult {
   missing: string[];
 }
 
-export function checkStage1(s: Stage1State): StageCheckResult {
-  const checks = [
-    { field: "company name", ok: normA3(s.name).indexOf("stuffed friends") !== -1 },
-    { field: "what they sell", ok: s.sells === "Stuffed Animal" },
-    { field: "headquarters city", ok: normA3(s.hq).indexOf("port klang") !== -1 },
-    { field: "executive matches", ok: s.execMatch.ceo === "Chen Takaaki" && s.execMatch.cfo === "Lam Tzefoon James" && s.execMatch.coo === "Adam bin Ibrahim" && s.execMatch.logistics === "Siti binti Muhammad" && s.execMatch.design === "Farhana binti Nur" },
-    { field: "top selling product", ok: !!s.topProduct.trim() },
-    { field: "countries they do business with", ok: numOnlyA3(s.countries) === "6" },
-    { field: "shipping companies under contract", ok: !!s.shippers.trim() },
-    { field: "total invoices", ok: numOnlyA3(s.invoices) === "88" },
-    { field: "current active shipments", ok: !!s.activeships.trim() },
-    { field: "file count", ok: numOnlyA3(s.filecount) === "620" },
-    { field: "database size", ok: !!s.dbsize.trim() },
-    { field: "longest phone call topic", ok: !!s.longestcall },
-    { field: "executive who sent the most emails", ok: !!s.mostemails },
-    { field: "new markets ordering samples", ok: !!s.newmarkets.trim() },
+// Stage 1's three lang-section boxes, in on-page order. Used to highlight
+// a whole section red when any field inside it is wrong.
+export const STAGE1_SECTIONS = ["company", "shipments", "database"] as const;
+export type Stage1Section = (typeof STAGE1_SECTIONS)[number];
+
+export interface Stage1CheckResult extends StageCheckResult {
+  badSections: Set<Stage1Section>;
+}
+
+export function checkStage1(s: Stage1State): Stage1CheckResult {
+  const checks: { field: string; ok: boolean; section: Stage1Section }[] = [
+    { field: "company name", ok: normA3(s.name).indexOf("stuffed friends") !== -1, section: "company" },
+    { field: "what they sell", ok: s.sells === "Stuffed Animals", section: "company" },
+    { field: "headquarters city", ok: normA3(s.hq).indexOf("port klang") !== -1, section: "company" },
+    { field: "executive matches", ok: s.execMatch.ceo === "Chen Takaaki" && s.execMatch.cfo === "Lam Tzefoon James" && s.execMatch.coo === "Adam bin Ibrahim" && s.execMatch.logistics === "Siti binti Muhammad" && s.execMatch.design === "Farhana binti Nur", section: "company" },
+    { field: "top selling product", ok: !!s.topProduct.trim(), section: "company" },
+    { field: "countries they do business with", ok: numOnlyA3(s.countries) === "6", section: "shipments" },
+    { field: "shipping companies under contract", ok: !!s.shippers.trim(), section: "shipments" },
+    { field: "total invoices", ok: numOnlyA3(s.invoices) === "88", section: "shipments" },
+    { field: "current active shipments", ok: !!s.activeships.trim(), section: "shipments" },
+    { field: "file count", ok: numOnlyA3(s.filecount) === "620", section: "database" },
+    { field: "database size", ok: !!s.dbsize.trim(), section: "database" },
+    { field: "longest phone call topic", ok: !!s.longestcall, section: "database" },
+    { field: "executive who sent the most emails", ok: !!s.mostemails, section: "database" },
+    { field: "new markets ordering samples", ok: !!s.newmarkets.trim(), section: "database" },
   ];
-  return { allOk: checks.every((c) => c.ok), missing: checks.filter((c) => !c.ok).map((c) => c.field) };
+  const bad = checks.filter((c) => !c.ok);
+  return {
+    allOk: bad.length === 0,
+    missing: bad.map((c) => c.field),
+    badSections: new Set(bad.map((c) => c.section)),
+  };
 }
 
 export function checkStage2(s: Stage2State): StageCheckResult {

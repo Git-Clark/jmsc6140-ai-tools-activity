@@ -220,7 +220,10 @@ export default function Module2({
               <p style={{ fontSize: 13, color: "var(--text-dim)", margin: 0 }}>Pick a topic manually:</p>
               <div className="topic-pick-grid">
                 {TOPICS.map((topic, idx) => (
-                  <button key={topic.name} className="topic-pick-btn" onClick={() => showTopic(idx)}>{topic.name}</button>
+                  <button key={topic.name} className="topic-pick-btn" onClick={() => showTopic(idx)}>
+                    <span className="topic-icon-box" dangerouslySetInnerHTML={{ __html: ICONS[idx] }} />
+                    <span>{topic.name}</span>
+                  </button>
                 ))}
               </div>
             </div>

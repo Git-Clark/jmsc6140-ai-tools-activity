@@ -223,6 +223,45 @@ export const CASE_FILES: CaseFile[] = [
   }
 ];
 
+// The company's phone call log for Stage 1's "longest phone call" question.
+// Students pick a file name from here instead of choosing a topic from a
+// dropdown -- matching how every other Stage 1/3 answer is sourced. Which
+// one is "correct" isn't checked (same as the prototype's original select,
+// where any non-empty pick counted); Call_022 is the one that lines up
+// with the smuggling route in the fact pattern.
+export const PHONE_CALLS: CaseFile[] = [
+  { "name": "Call_001_2026-09-02.pdf", "cat": "Phone Calls" },
+  { "name": "Call_002_2026-09-02.pdf", "cat": "Phone Calls" },
+  { "name": "Call_003_2026-09-03.pdf", "cat": "Phone Calls" },
+  { "name": "Call_004_2026-09-03.pdf", "cat": "Phone Calls" },
+  { "name": "Call_005_2026-09-04.pdf", "cat": "Phone Calls" },
+  { "name": "Call_006_2026-09-04.pdf", "cat": "Phone Calls" },
+  { "name": "Call_007_2026-09-05.pdf", "cat": "Phone Calls" },
+  { "name": "Call_008_WeatherSmallTalk_2026-09-05.pdf", "cat": "Phone Calls" },
+  { "name": "Call_009_2026-09-06.pdf", "cat": "Phone Calls" },
+  { "name": "Call_010_2026-09-08.pdf", "cat": "Phone Calls" },
+  { "name": "Call_011_2026-09-09.pdf", "cat": "Phone Calls" },
+  { "name": "Call_012_JapaneseOrderDetails_2026-09-10.pdf", "cat": "Phone Calls" },
+  { "name": "Call_013_2026-09-10.pdf", "cat": "Phone Calls" },
+  { "name": "Call_014_2026-09-11.pdf", "cat": "Phone Calls" },
+  { "name": "Call_015_2026-09-12.pdf", "cat": "Phone Calls" },
+  { "name": "Call_016_StockPriceFalling_2026-09-13.pdf", "cat": "Phone Calls" },
+  { "name": "Call_017_2026-09-13.pdf", "cat": "Phone Calls" },
+  { "name": "Call_018_2026-09-14.pdf", "cat": "Phone Calls" },
+  { "name": "Call_019_2026-09-15.pdf", "cat": "Phone Calls" },
+  { "name": "Call_020_DelayedFactoryProductionVietnam_2026-09-16.pdf", "cat": "Phone Calls" },
+  { "name": "Call_021_2026-09-17.pdf", "cat": "Phone Calls" },
+  { "name": "Call_022_DirectionsPadangBesarBorderCrossing_2026-09-18.pdf", "cat": "Phone Calls" },
+  { "name": "Call_023_2026-09-18.pdf", "cat": "Phone Calls" },
+  { "name": "Call_024_2026-09-19.pdf", "cat": "Phone Calls" },
+  { "name": "Call_025_AnimalTraffickingDiscussion_2026-09-20.pdf", "cat": "Phone Calls" },
+  { "name": "Call_026_2026-09-22.pdf", "cat": "Phone Calls" },
+  { "name": "Call_027_2026-09-23.pdf", "cat": "Phone Calls" },
+  { "name": "Call_028_2026-09-24.pdf", "cat": "Phone Calls" },
+  { "name": "Call_029_2026-09-26.pdf", "cat": "Phone Calls" },
+  { "name": "Call_030_2026-09-27.pdf", "cat": "Phone Calls" }
+];
+
 export interface ExecPosition {
   key: "ceo" | "cfo" | "coo" | "logistics" | "design";
   label: string;

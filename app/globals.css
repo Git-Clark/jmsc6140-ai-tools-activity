@@ -202,6 +202,10 @@ main{ background:var(--panel); border-top:1px solid var(--line); }
 
 /* ---------- Language sections ---------- */
 .lang-section{ margin-bottom:30px; border:1px solid var(--line); border-radius:14px; overflow:hidden; }
+.lang-section.invalid{ border-color:var(--bad); box-shadow:0 0 0 1px var(--bad); }
+.lang-section.invalid > .lang-head{ background:var(--bad-bg); border-bottom-color:var(--bad); }
+
+.activity-warning{ font-size:12.5px; color:var(--bad); font-weight:600; margin:4px 0 0; }
 .lang-head{
   display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
   padding:14px 18px; background:var(--panel-2); border-bottom:1px solid var(--line);
@@ -312,9 +316,12 @@ main{ background:var(--panel); border-top:1px solid var(--line); }
   font-size:26px; color:var(--text-dim); font-weight:700;
 }
 .topic-icon-box svg{ width:100%; height:100%; display:block; }
-.topic-pre-layout{ display:flex; flex-direction:row-reverse; align-items:center; gap:18px; flex-wrap:wrap; }
-.topic-card-layout{ display:flex; flex-direction:row-reverse; align-items:flex-start; gap:18px; }
+.topic-pre-layout{ display:flex; flex-direction:row; align-items:center; gap:18px; flex-wrap:wrap; }
+.topic-card-layout{ display:flex; flex-direction:row; align-items:flex-start; gap:18px; }
 .topic-card-layout > div:last-child{ flex:1; min-width:0; }
+
+.topic-pick-btn{ display:flex; align-items:center; gap:10px; text-align:left; }
+.topic-pick-btn .topic-icon-box{ width:36px; height:36px; border-radius:10px; font-size:14px; }
 
 .ai-policy-btn{
   width:34px; height:34px; border-radius:50%; border:1px solid var(--bad); background:var(--bad-bg); color:var(--bad);
