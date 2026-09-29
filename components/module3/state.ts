@@ -100,7 +100,22 @@ export function defaultP3State(): P3State {
 
 export function isP3State(v: unknown): v is P3State {
   const s = v as P3State;
-  return !!s && Array.isArray(s.timeline) && Array.isArray(s.animalEvi) && !!s.stage1 && !!s.stage2;
+  return (
+    !!s &&
+    Array.isArray(s.timeline) &&
+    Array.isArray(s.animalEvi) &&
+    !!s.stage1 &&
+    !!s.stage2 &&
+    // Stage2's shape changed 2026-09-29 (deadline -> delayEmails,
+    // repeatfollowup -> mostInvolvedExec). Without this check, a browser
+    // that still has the OLD shape saved in localStorage would pass the
+    // loose checks above, load verbatim, and then crash Stage 2 on
+    // render (EvidenceList calling .map on an undefined delayEmails) --
+    // that's the "Stage 2 can't load" bug. Rejecting stale shapes here
+    // falls back to a fresh default state instead of crashing.
+    Array.isArray(s.stage2.delayEmails) &&
+    typeof s.stage2.mostInvolvedExec === "string"
+  );
 }
 
 export function normA3(s: string): string {
