@@ -58,7 +58,7 @@ export const PREVIEW_NOTE = "This is a preview build. The real leaked case files
 
 export const AI_POLICY_TEXT = "You are strictly prohibited from using AI to write your Headline or 50-Word Summary. AI tools should ONLY be used for comparative background research, cross-referencing datasets in Flourish AI, and discovering relevant coverage using AI discovery tools.";
 export const HELP_TEXT = "HELP TO GET STARTED: The goal of the investigation is to find a fact pattern of this situation. Start by asking about info about upcoming shipments and the background of the executives. Good luck!";
-export const TRANSITION_TEXT = "Now each of your teammates has all the pieces you need. It is time to bring this case all together so we can find the missing animal and tell local authorities before the container is set to leave tomorrow.";
+export const TRANSITION_TEXT = "Now each of your teammates have all the pieces needed. It is time to bring this case all together. Where can we find the missing animal before the container is set to leave tomorrow.";
 
 export const CLIP_EN_NAME = "English Feature Video News Report";
 export const CLIP_YUE_NAME = "Cantonese News Broadcast";

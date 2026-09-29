@@ -39,6 +39,8 @@ export default function Stage3({
       const missing: string[] = [];
       if (!result.animalOk) missing.push("animal");
       if (!result.containerOk) missing.push("container ID");
+      if (!result.cityNowOk) missing.push("current city");
+      if (!result.portNowOk) missing.push("current port/yard");
       if (!result.execOk) missing.push("guilty executive");
       if (!result.destOk) missing.push("final destination");
       if (!result.evidenceOk) missing.push("an evidence file for every claim");

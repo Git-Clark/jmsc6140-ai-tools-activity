@@ -274,7 +274,7 @@ export default function Module2({
             </div>
 
             <div className="field" style={{ marginTop: 16 }}>
-              <label>Data Visualization &mdash; Flourish AI link or embed code</label>
+              <label>Data Visualization &mdash; <a href="https://flourish.studio/" target="_blank" rel="noopener">Flourish AI</a> link</label>
               <input type="text" placeholder="https://flo.uri.sh/visualisation/.../embed" {...field("flourish")} />
             </div>
 

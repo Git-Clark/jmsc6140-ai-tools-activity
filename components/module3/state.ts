@@ -200,6 +200,8 @@ export interface CaseResult {
   allOk: boolean;
   animalOk: boolean;
   containerOk: boolean;
+  cityNowOk: boolean;
+  portNowOk: boolean;
   execOk: boolean;
   destOk: boolean;
   evidenceOk: boolean;
@@ -208,11 +210,16 @@ export interface CaseResult {
 export function checkCase(p3: P3State): CaseResult {
   const animalOk = normA3(p3.animal).indexOf("otter") !== -1;
   const containerOk = normA3(p3.container).replace(/\s+/g, "") === "yllu3719322";
+  const cityNowOk = normA3(p3.cityNow).indexOf("bangkok") !== -1;
+  const portNowOk = normA3(p3.portNow).indexOf("laem chabang") !== -1;
   const execOk = /farhana|nok|nur/.test(normA3(p3.exec));
   const destOk = /manaus|brazil/.test(normA3(p3.portDest) + " " + normA3(p3.countryDest));
   const animalEviOk = p3.animalEvi.some((v) => !!v);
   const locationEviOk = p3.locationEvi.some((v) => !!v);
   const execEviOk = p3.execEvi.some((v) => !!v);
   const evidenceOk = animalEviOk && locationEviOk && execEviOk && p3.timeline.every((r) => !!r.evi);
-  return { allOk: animalOk && containerOk && execOk && destOk && evidenceOk, animalOk, containerOk, execOk, destOk, evidenceOk };
+  return {
+    allOk: animalOk && containerOk && cityNowOk && portNowOk && execOk && destOk && evidenceOk,
+    animalOk, containerOk, cityNowOk, portNowOk, execOk, destOk, evidenceOk,
+  };
 }

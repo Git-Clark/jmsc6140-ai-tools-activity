@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { pickRevealImage, REVEAL_IMAGE_SRC } from "@/lib/module3-data";
+import { REVEAL_IMAGE_SRC } from "@/lib/module3-data";
+import ClosedContainerGraphic from "./ClosedContainerGraphic";
 
 const CONFETTI_COLORS = ["#7748D1", "#2E7D4F", "#D4B24C", "#E5766D", "#5FBE83"];
 
@@ -52,8 +53,10 @@ function Confetti() {
 }
 
 /** Ports showReveal(): hidden until an animal guess is entered, then shows
- * the otter-win image + confetti on an all-correct submission, or the
- * matching (or fallback otter) "wrong container" image otherwise. */
+ * the otter-win image + confetti on an all-correct submission. A wrong
+ * submission no longer opens on a per-animal-guess decoy photo -- it
+ * just shows the container still closed, since the team didn't solve
+ * the case well enough to actually open it. */
 export default function RevealBox({ animalGuess, allOk }: { animalGuess: string; allOk: boolean }) {
   const guess = (animalGuess || "").toString().trim();
   if (!guess) return null;
@@ -67,11 +70,10 @@ export default function RevealBox({ animalGuess, allOk }: { animalGuess: string;
       </div>
     );
   }
-  const key = pickRevealImage(guess);
   return (
     <div className="a3-reveal">
-      <img src={REVEAL_IMAGE_SRC[key]} alt="Shipping container opened, no real animals found" />
-      <div className="a3-reveal-caption lose">No real animals here.</div>
+      <ClosedContainerGraphic className="a3-reveal-closed" />
+      <div className="a3-reveal-caption lose">Not quite. The container stays sealed.</div>
     </div>
   );
 }

@@ -842,7 +842,10 @@ export interface RevealKeyword {
   test: RegExp;
 }
 
-// Order matters: first match wins, exactly like the prototype's
+// No longer used by RevealBox.tsx (2026-09-29: a wrong guess now shows
+// the closed container instead of a per-animal decoy photo), kept here
+// in case that per-guess decoy behavior is wanted back later. Order
+// matters: first match wins, exactly like the prototype's
 // REVEAL_KEYWORDS.some()-style for loop.
 export const REVEAL_KEYWORDS: RevealKeyword[] = [
   { key: "gibbon", test: /gibbon|monkey/ },

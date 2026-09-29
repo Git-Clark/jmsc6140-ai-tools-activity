@@ -9,13 +9,16 @@ const THEME_KEY = "jmsc6140_theme";
  * the data-theme attribute (so the prefers-color-scheme media query in
  * globals.css takes over), otherwise data-theme is set explicitly. */
 export function useTheme(): [ThemeMode, (mode: ThemeMode) => void] {
-  const [theme, setThemeState] = useState<ThemeMode>("system");
+  // Dark is the default for a first-time visitor (no saved preference
+  // yet) -- "System" is still a selectable option in the toggle, it's
+  // just no longer what a fresh browser starts on.
+  const [theme, setThemeState] = useState<ThemeMode>("dark");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    let saved: ThemeMode = "system";
+    let saved: ThemeMode = "dark";
     try {
-      saved = (window.localStorage.getItem(THEME_KEY) as ThemeMode) || "system";
+      saved = (window.localStorage.getItem(THEME_KEY) as ThemeMode) || "dark";
     } catch {
       /* ignore */
     }

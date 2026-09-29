@@ -9,11 +9,12 @@ export const metadata: Metadata = {
 
 // Inline, blocking theme-init script: reads the saved theme preference
 // before paint so switching pages / reloading never flashes the wrong
-// theme. Mirrors the prototype's initTheme()/applyTheme() exactly.
+// theme. Dark is the default for a first-time visitor (no saved
+// preference yet); "System" is still selectable from the toggle.
 const THEME_INIT_SCRIPT = `
 (function(){
   try {
-    var saved = localStorage.getItem('jmsc6140_theme') || 'system';
+    var saved = localStorage.getItem('jmsc6140_theme') || 'dark';
     if (saved !== 'system') {
       document.documentElement.setAttribute('data-theme', saved);
     }
