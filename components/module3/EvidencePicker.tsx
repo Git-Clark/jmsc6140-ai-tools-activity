@@ -22,6 +22,7 @@ export default function EvidencePicker({
   placeholder?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const [upward, setUpward] = useState(false);
   const [query, setQuery] = useState("");
   const wrapRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
@@ -35,6 +36,13 @@ export default function EvidencePicker({
   }, []);
 
   function openPanel() {
+    // Flip the panel to open upward when there isn't roughly enough
+    // room below the trigger for it (max-height 280px + a little
+    // margin) so a picker near the bottom of the screen doesn't run
+    // off-screen or get pushed behind other content.
+    const rect = wrapRef.current?.getBoundingClientRect();
+    const spaceBelow = rect ? window.innerHeight - rect.bottom : Infinity;
+    setUpward(spaceBelow < 300);
     setQuery("");
     setOpen(true);
     setTimeout(() => searchRef.current?.focus(), 0);
@@ -65,7 +73,7 @@ export default function EvidencePicker({
           &times;
         </span>
       </button>
-      <div className={"cite-panel" + (open ? " open" : "")}>
+      <div className={"cite-panel" + (open ? " open" : "") + (open && upward ? " upward" : "")}>
         <input
           ref={searchRef}
           type="text"

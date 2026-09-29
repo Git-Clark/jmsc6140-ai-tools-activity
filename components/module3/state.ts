@@ -32,8 +32,15 @@ export interface Stage2State {
   shipissues: string;
   transferred: string;
   followup: string;
-  deadline: string;
-  repeatfollowup: string;
+  /** File names picked from the real Emails manifest for the "past 3
+   * days with shipping delays" follow-up question. Presence-only check
+   * (like the Stage 3 evidence pickers) -- the exact 2 correct emails
+   * aren't identified in the fact pattern doc, so any picked file(s)
+   * count, matching how evidence citations are graded everywhere else. */
+  delayEmails: string[];
+  /** "Which executive is most involved in follow up orders?" -- a
+   * dropdown over EXEC_NAMES, correct answer Farhana binti Nur. */
+  mostInvolvedExec: string;
 }
 
 export interface TimelineRow {
@@ -86,7 +93,7 @@ export function defaultP3State(): P3State {
     },
     stage2: {
       execWatch: { ceo: "", cfo: "", coo: "", logistics: "", design: "" },
-      shipissues: "", transferred: "", followup: "", deadline: "", repeatfollowup: "",
+      shipissues: "", transferred: "", followup: "", delayEmails: [""], mostInvolvedExec: "",
     },
   };
 }
@@ -99,12 +106,18 @@ export function isP3State(v: unknown): v is P3State {
 export function normA3(s: string): string {
   return (s || "").toString().trim().toLowerCase();
 }
-// PLACEHOLDER file-count answer key -- left at 620 per the professor's
-// explicit instruction (the real packet was rebuilt to 720 files; he will
-// adjust this himself once the real packet is finalized). Do not "fix".
+
 export function numOnlyA3(s: string): string {
   const m = (s || "").toString().match(/\d+/);
   return m ? m[0] : "";
+}
+
+/** Pulls the first decimal (or whole) number out of a free-typed answer,
+ * e.g. "about 16.9 MB" -> 16.9. Used for the database-size check, which
+ * needs a tolerance rather than exact string equality. */
+export function numFloatA3(s: string): number | null {
+  const m = (s || "").toString().match(/\d+(\.\d+)?/);
+  return m ? parseFloat(m[0]) : null;
 }
 
 export interface StageCheckResult {
@@ -121,7 +134,13 @@ export interface Stage1CheckResult extends StageCheckResult {
   badSections: Set<Stage1Section>;
 }
 
+// File-count and phone-call answers were updated 2026-09-29 to match the
+// real KLSF_Investigation_Student_Packet the professor uploaded: 799
+// files in the database (747 case files + 30 voice messages + 22 chart
+// images referenced by the market reports; 800 is also accepted for
+// rounding), and Call_16_Lam_Tze_foon_James as the longest phone call.
 export function checkStage1(s: Stage1State): Stage1CheckResult {
+  const dbsizeNum = numFloatA3(s.dbsize);
   const checks: { field: string; ok: boolean; section: Stage1Section }[] = [
     { field: "company name", ok: normA3(s.name).indexOf("stuffed friends") !== -1, section: "company" },
     { field: "what they sell", ok: s.sells === "Stuffed Animals", section: "company" },
@@ -132,11 +151,11 @@ export function checkStage1(s: Stage1State): Stage1CheckResult {
     { field: "shipping companies under contract", ok: !!s.shippers.trim(), section: "shipments" },
     { field: "total invoices", ok: numOnlyA3(s.invoices) === "88", section: "shipments" },
     { field: "current active shipments", ok: !!s.activeships.trim(), section: "shipments" },
-    { field: "file count", ok: numOnlyA3(s.filecount) === "620", section: "database" },
-    { field: "database size", ok: !!s.dbsize.trim(), section: "database" },
-    { field: "longest phone call topic", ok: !!s.longestcall, section: "database" },
+    { field: "file count", ok: ["799", "800"].includes(numOnlyA3(s.filecount)), section: "database" },
+    { field: "database size", ok: dbsizeNum !== null && Math.abs(dbsizeNum - 16.9) < 0.05, section: "database" },
+    { field: "longest phone call topic", ok: normA3(s.longestcall).indexOf("call_16") !== -1, section: "database" },
     { field: "executive who sent the most emails", ok: !!s.mostemails, section: "database" },
-    { field: "new markets ordering samples", ok: !!s.newmarkets.trim(), section: "database" },
+    { field: "new markets ordering samples", ok: numOnlyA3(s.newmarkets) === "3", section: "database" },
   ];
   const bad = checks.filter((c) => !c.ok);
   return {
@@ -148,12 +167,16 @@ export function checkStage1(s: Stage1State): Stage1CheckResult {
 
 export function checkStage2(s: Stage2State): StageCheckResult {
   const checks = [
-    { field: "each executive’s whereabouts", ok: (["ceo", "cfo", "coo", "logistics", "design"] as const).every((k) => !!s.execWatch[k].trim()) },
-    { field: "orders with shipping issues", ok: !!s.shipissues.trim() },
-    { field: "orders transferred to a different port", ok: !!s.transferred.trim() },
-    { field: "customer follow-up emails", ok: !!s.followup.trim() },
-    { field: "deadline mentions", ok: !!s.deadline.trim() },
-    { field: "repeat follow-ups", ok: !!s.repeatfollowup.trim() },
+    { field: "CEO's city", ok: normA3(s.execWatch.ceo).indexOf("port klang") !== -1 },
+    { field: "CFO's city", ok: normA3(s.execWatch.cfo).indexOf("dubai") !== -1 },
+    { field: "COO's city", ok: normA3(s.execWatch.coo).indexOf("taman negara") !== -1 },
+    { field: "Head of Global Logistics' city", ok: normA3(s.execWatch.logistics).indexOf("dubai") !== -1 },
+    { field: "Head of Design, QC & Packaging's city", ok: normA3(s.execWatch.design).indexOf("port klang") !== -1 },
+    { field: "orders with shipping issues", ok: numOnlyA3(s.shipissues) === "3" },
+    { field: "orders transferred to a different port", ok: numOnlyA3(s.transferred) === "2" },
+    { field: "customer follow-up emails", ok: numOnlyA3(s.followup) === "2" },
+    { field: "shipping-delay follow-up email file(s)", ok: s.delayEmails.some((v) => !!v) },
+    { field: "executive most involved in follow-up orders", ok: s.mostInvolvedExec === "Farhana binti Nur" },
   ];
   return { allOk: checks.every((c) => c.ok), missing: checks.filter((c) => !c.ok).map((c) => c.field) };
 }

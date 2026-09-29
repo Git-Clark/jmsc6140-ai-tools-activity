@@ -83,7 +83,7 @@ const Module3 = forwardRef<Module3Handle, { onStatusChange: (done: boolean) => v
         <div className="head-actions">
           <button className="btn" type="button" onClick={() => { setOnboardAllowReturn(true); setOnboardOpen(true); }}>Instructions</button>
           <button className="btn btn-gold" type="button" onClick={() => setHelpOpen(true)}>Help</button>
-          <a className="btn dl btn-disabled" href="#" aria-disabled="true" title="The real case files are still being uploaded" onClick={(e) => e.preventDefault()}>Download Case Files (Coming Soon)</a>
+          <a className="btn dl" href="/case-files/KLSF_Investigation_Student_Packet.zip" download>Download Case Files</a>
         </div>
       </div>
 

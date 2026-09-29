@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Lang,
   TOOLS,
@@ -44,6 +44,34 @@ function isP1State(v: unknown): v is P1State {
 
 function esc(s: string) {
   return s;
+}
+
+/** Tool-ideas "i" button. Was hover-to-show, which cut the list off
+ * whenever the pointer left the button before it could be read; now a
+ * click toggles it open/closed, with an outside click closing it, same
+ * interaction pattern as the Activity 3 evidence pickers. */
+function InfoPopover() {
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function onDocClick(e: MouseEvent) {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("click", onDocClick);
+    return () => document.removeEventListener("click", onDocClick);
+  }, []);
+
+  return (
+    <div className="info-wrap" ref={wrapRef}>
+      <button type="button" className="info-btn" onClick={() => setOpen((o) => !o)} aria-label="Tool ideas">i</button>
+      <div className={"info-pop" + (open ? " open" : "")}>
+        <strong>Tool ideas (not required, not exhaustive)</strong>
+        <ul className="tool-list">{TOOLS.map((t) => <li key={t}>{t}</li>)}</ul>
+        <span className="note">You are not limited to this list.</span>
+      </div>
+    </div>
+  );
 }
 
 function renderColumn(ops: AlignOp[], lang: Lang, side: "ref" | "hyp") {
@@ -220,14 +248,7 @@ export default function Module1({
             <span className="lang-flag">EN</span> English{" "}
             <span className="lang-cite">- <a href={LANG_CITE_EN_LINK_HREF} target="_blank" rel="noopener">{LANG_CITE_EN_LINK_TEXT}</a>{LANG_CITE_EN_SUFFIX}</span>
           </h3>
-          <div className="info-wrap">
-            <span className="info-btn">i</span>
-            <div className="info-pop">
-              <strong>Tool ideas (not required, not exhaustive)</strong>
-              <ul className="tool-list">{TOOLS.map((t) => <li key={t}>{t}</li>)}</ul>
-              <span className="note">You are not limited to this list.</span>
-            </div>
-          </div>
+          <InfoPopover />
         </div>
         <div className="lang-body">
           {state.en.map((entry, idx) => (
@@ -241,14 +262,7 @@ export default function Module1({
       <div className="lang-section" data-lang="yue">
         <div className="lang-head">
           <h3><span className="lang-flag">&#31908;</span> Traditional Chinese (Cantonese) <span className="lang-cite">- {LANG_CITE_YUE}</span></h3>
-          <div className="info-wrap">
-            <span className="info-btn">i</span>
-            <div className="info-pop">
-              <strong>Tool ideas (not required, not exhaustive)</strong>
-              <ul className="tool-list">{TOOLS.map((t) => <li key={t}>{t}</li>)}</ul>
-              <span className="note">You are not limited to this list.</span>
-            </div>
-          </div>
+          <InfoPopover />
         </div>
         <div className="lang-body">
           {state.yue.map((entry, idx) => (

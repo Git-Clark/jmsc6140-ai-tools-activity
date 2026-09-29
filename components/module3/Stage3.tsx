@@ -1,34 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import { CASE_DESCRIPTION, PREVIEW_NOTE } from "@/lib/content";
+import { EXEC_POSITIONS } from "@/lib/module3-data";
 import EvidencePicker from "./EvidencePicker";
+import EvidenceList from "./EvidenceList";
 import RevealBox from "./RevealBox";
+import ContainerGateModal from "./ContainerGateModal";
 import { CaseResult, P3State } from "./state";
-
-function EvidenceList({
-  values,
-  onChange,
-}: {
-  values: string[];
-  onChange: (next: string[]) => void;
-}) {
-  return (
-    <div className="field" style={{ marginTop: 14 }}>
-      <label>Evidence Files</label>
-      <div>
-        {values.map((v, idx) => (
-          <div className="evi-list-row" key={idx}>
-            <EvidencePicker value={v} onChange={(nv) => onChange(values.map((x, i) => (i === idx ? nv : x)))} />
-            {values.length > 1 && (
-              <button type="button" className="evi-remove" onClick={() => onChange(values.filter((_, i) => i !== idx))}>Remove</button>
-            )}
-          </div>
-        ))}
-      </div>
-      <button type="button" className="btn" style={{ marginTop: 8 }} onClick={() => onChange([...values, ""])}>+ Add Evidence</button>
-    </div>
-  );
-}
 
 export default function Stage3({
   p3,
@@ -45,6 +24,10 @@ export default function Stage3({
   result: CaseResult | null;
   onOpenDebrief: () => void;
 }) {
+  const [containerOpened, setContainerOpened] = useState(() => p3.unlocked);
+  const showGate = p3.hasSubmittedCase && !!result?.allOk && !containerOpened;
+  const revealVisible = p3.hasSubmittedCase && !!result && (!result.allOk || containerOpened);
+
   const lockState = !p3.hasSubmittedCase ? "" : result?.allOk ? " unlocked" : " failed";
   const lockIcon = !p3.hasSubmittedCase ? "\u{1F512}" : result?.allOk ? "\u{1F513}" : "\u{1F512}";
   const lockTitle = !p3.hasSubmittedCase ? "Container Locked" : result?.allOk ? "Container Unlocked" : "Not Quite Yet";
@@ -74,7 +57,7 @@ export default function Stage3({
       </div>
 
       <div className="lang-section">
-        <div className="lang-head"><h3>Timeline of Events</h3></div>
+        <div className="lang-head"><h3>Timeline of Events - From Beginning to the Present</h3></div>
         <div className="lang-body">
           <p style={{ fontSize: 12.5, color: "var(--text-dim)", margin: "0 0 4px" }}>List the events, in order, that build your case. Each one needs a supporting file name.</p>
           <div>
@@ -109,9 +92,15 @@ export default function Stage3({
       <div className="lang-section">
         <div className="lang-head"><h3>The Guilty Executive</h3></div>
         <div className="lang-body">
-          <div className="field"><label>Name</label><input type="text" placeholder="Full name of the executive responsible" value={p3.exec} onChange={(e) => onChange({ exec: e.target.value })} /></div>
-          <div className="field" style={{ marginTop: 14 }}><label>Why did they do it?</label><textarea rows={3} placeholder="Explain what the evidence shows" value={p3.execWhy} onChange={(e) => onChange({ execWhy: e.target.value })} /></div>
-          <EvidenceList values={p3.execEvi} onChange={(v) => onChange({ execEvi: v })} />
+          <div className="field">
+            <label>Name</label>
+            <select className="field-select" value={p3.exec} onChange={(e) => onChange({ exec: e.target.value })}>
+              <option value="">Choose an executive…</option>
+              {EXEC_POSITIONS.map((p) => <option key={p.key} value={p.name}>{p.name} ({p.label})</option>)}
+            </select>
+          </div>
+          <div className="field" style={{ marginTop: 14 }}><label>How do we know?</label><textarea rows={3} placeholder="Explain what the evidence shows" value={p3.execWhy} onChange={(e) => onChange({ execWhy: e.target.value })} /></div>
+          <EvidenceList label="Evidence Files" values={p3.execEvi} onChange={(v) => onChange({ execEvi: v })} />
         </div>
       </div>
 
@@ -123,7 +112,7 @@ export default function Stage3({
             <div className="field"><label>City</label><input type="text" placeholder="City name" value={p3.cityNow} onChange={(e) => onChange({ cityNow: e.target.value })} /></div>
             <div className="field"><label>Shipping Container ID</label><input type="text" placeholder="e.g. ABCD1234567" value={p3.container} onChange={(e) => onChange({ container: e.target.value })} /></div>
           </div>
-          <EvidenceList values={p3.locationEvi} onChange={(v) => onChange({ locationEvi: v })} />
+          <EvidenceList label="Evidence Files" values={p3.locationEvi} onChange={(v) => onChange({ locationEvi: v })} />
         </div>
       </div>
 
@@ -141,7 +130,7 @@ export default function Stage3({
         <div className="lang-head"><h3>The Trafficked Animal</h3></div>
         <div className="lang-body">
           <div className="field"><label>Species</label><input type="text" placeholder="What animal is being trafficked?" value={p3.animal} onChange={(e) => onChange({ animal: e.target.value })} /></div>
-          <EvidenceList values={p3.animalEvi} onChange={(v) => onChange({ animalEvi: v })} />
+          <EvidenceList label="Evidence Files" values={p3.animalEvi} onChange={(v) => onChange({ animalEvi: v })} />
         </div>
       </div>
 
@@ -159,7 +148,7 @@ export default function Stage3({
           {p3.hasSubmittedCase && (
             <button className="btn" type="button" style={{ marginTop: 14, marginLeft: 10 }} onClick={onOpenDebrief}>See Debrief</button>
           )}
-          {p3.hasSubmittedCase && result && <RevealBox animalGuess={p3.animal} allOk={result.allOk} />}
+          {revealVisible && result && <RevealBox animalGuess={p3.animal} allOk={result.allOk} />}
         </div>
       </div>
 
@@ -167,6 +156,8 @@ export default function Stage3({
         <button className="btn" type="button" onClick={onBack}>&larr; Back</button>
         <div className="a3-stage-feedback"></div>
       </div>
+
+      <ContainerGateModal open={showGate} onOpen={() => setContainerOpened(true)} />
     </div>
   );
 }

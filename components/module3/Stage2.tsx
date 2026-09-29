@@ -1,8 +1,11 @@
 "use client";
 
-import { EXEC_POSITIONS } from "@/lib/module3-data";
+import { CASE_FILES, EXEC_NAMES_ALPHA, EXEC_POSITIONS } from "@/lib/module3-data";
 import { CASE_DESCRIPTION, PREVIEW_NOTE } from "@/lib/content";
 import { Stage2State } from "./state";
+import EvidenceList from "./EvidenceList";
+
+const EMAIL_FILES = CASE_FILES.filter((f) => f.cat === "Emails");
 
 export default function Stage2({
   s,
@@ -28,16 +31,16 @@ export default function Stage2({
       </div>
 
       <div className="lang-section">
-        <div className="lang-head"><h3>Executives Watch</h3></div>
+        <div className="lang-head"><h3>Executives Watch - City</h3></div>
         <div className="lang-body">
-          <p className="field-hint" style={{ margin: "0 0 8px" }}>Where is each executive right now, based on what you&apos;ve found?</p>
+          <p className="field-hint" style={{ margin: "0 0 8px" }}>What city is each executive right now, based on what you&apos;ve found?</p>
           <div>
             {EXEC_POSITIONS.map((p) => (
               <div className="field" style={{ marginBottom: 12 }} key={p.key}>
                 <label>{p.name} ({p.label})</label>
                 <input
                   type="text"
-                  placeholder="Current whereabouts"
+                  placeholder="City, Country"
                   value={s.execWatch[p.key]}
                   onChange={(e) => onChange({ execWatch: { ...s.execWatch, [p.key]: e.target.value } })}
                 />
@@ -61,8 +64,20 @@ export default function Stage2({
         <div className="lang-head"><h3>Customer Communication</h3></div>
         <div className="lang-body">
           <div className="field"><label>For the orders in the past 3 days with shipping delays, how many customers sent a follow-up email asking when they will receive their order?</label><input type="text" value={s.followup} onChange={(e) => onChange({ followup: e.target.value })} /></div>
-          <div className="field" style={{ marginTop: 14 }}><label>Did any customer email mention a specific deadline they need the shipment by?</label><input type="text" value={s.deadline} onChange={(e) => onChange({ deadline: e.target.value })} /></div>
-          <div className="field" style={{ marginTop: 14 }}><label>How many of the delayed orders had more than one follow-up email from the same customer?</label><input type="text" value={s.repeatfollowup} onChange={(e) => onChange({ repeatfollowup: e.target.value })} /></div>
+          <EvidenceList
+            label="Please select the file names for the past 3 days with shipping delays follow up emails"
+            values={s.delayEmails}
+            onChange={(v) => onChange({ delayEmails: v })}
+            items={EMAIL_FILES}
+            placeholder="Search emails…"
+          />
+          <div className="field" style={{ marginTop: 14 }}>
+            <label>Which executive is most involved in follow up orders?</label>
+            <select className="field-select" value={s.mostInvolvedExec} onChange={(e) => onChange({ mostInvolvedExec: e.target.value })}>
+              <option value="">Choose an executive…</option>
+              {EXEC_NAMES_ALPHA.map((n) => <option key={n}>{n}</option>)}
+            </select>
+          </div>
         </div>
       </div>
 

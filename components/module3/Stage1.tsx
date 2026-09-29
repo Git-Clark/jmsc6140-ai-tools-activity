@@ -92,7 +92,7 @@ export default function Stage1({
         <div className="lang-head"><h3>Database Parameters - Email &amp; Internal Communication Reporter</h3></div>
         <div className="lang-body">
           <div className="form-grid">
-            <div className="field"><label>How many files are in the database?</label><input type="text" value={s.filecount} onChange={(e) => onChange({ filecount: e.target.value })} /></div>
+            <div className="field"><label>How many files are in the database? (Under 1000)</label><input type="text" value={s.filecount} onChange={(e) => onChange({ filecount: e.target.value })} /></div>
             <div className="field"><label>What is the size, in Megabytes, of the entire database?</label><input type="text" value={s.dbsize} onChange={(e) => onChange({ dbsize: e.target.value })} /></div>
             <div className="field">
               <label>What is the topic of the longest phone call?</label>
